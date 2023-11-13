@@ -2,15 +2,16 @@
 
 namespace app\controllers;
 
-use Yii;
+use app\models\Post;
+use app\models\PostSearch;
 use yii\web\Controller;
-use app\models\Employee;
-use yii\data\Pagination;
-use yii\filters\VerbFilter;
-use app\models\EmployeeSearch;
 use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
 
-class EmployeeController extends Controller
+/**
+ * PostController implements the CRUD actions for Post model.
+ */
+class PostController extends Controller
 {
     /**
      * @inheritDoc
@@ -31,13 +32,13 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Lists all Employee models.
+     * Lists all Post models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new EmployeeSearch();
+        $searchModel = new PostSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -47,7 +48,7 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Displays a single Employee model.
+     * Displays a single Post model.
      * @param int $ID ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -60,23 +61,20 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Creates a new Employee model.
+     * Creates a new Post model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new Employee();
+        $model = new Post();
 
-        if (Yii::$app->request->post()) {
-            $model->load(Yii::$app->request->post());
-            if ($model->save()) {
-                Yii::$app->session->setFlash('success', 'Data berhasil disimpan');
-            } else {
-                $model->loadDefaultValues();
-                Yii::$app->session->setFlash('error', 'Gagal disimpan');
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'ID' => $model->ID]);
             }
-            return $this->refresh();
+        } else {
+            $model->loadDefaultValues();
         }
 
         return $this->render('create', [
@@ -85,7 +83,7 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Updates an existing Employee model.
+     * Updates an existing Post model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $ID ID
      * @return string|\yii\web\Response
@@ -95,14 +93,8 @@ class EmployeeController extends Controller
     {
         $model = $this->findModel($ID);
 
-        if (Yii::$app->request->post()) {
-            $model->load(Yii::$app->request->post());
-            if ($model->save()) {
-                Yii::$app->session->setFlash('success', 'Data berhasil disimpan');
-            } else {
-                Yii::$app->session->setFlash('error', 'Gagal disimpan');
-            }
-            return $this->refresh();
+        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'ID' => $model->ID]);
         }
 
         return $this->render('update', [
@@ -111,7 +103,7 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Deletes an existing Employee model.
+     * Deletes an existing Post model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $ID ID
      * @return \yii\web\Response
@@ -125,15 +117,15 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Finds the Employee model based on its primary key value.
+     * Finds the Post model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $ID ID
-     * @return Employee the loaded model
+     * @return Post the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($ID)
     {
-        if (($model = Employee::findOne(['ID' => $ID])) !== null) {
+        if (($model = Post::findOne(['ID' => $ID])) !== null) {
             return $model;
         }
 

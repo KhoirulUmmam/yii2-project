@@ -19,4 +19,14 @@ class Employee extends ActiveRecord
             [['AGE'], 'integer'],
         ];
     }
+
+    public function attributeLabels()
+    {
+        return [
+            'ID' => 'ID',
+            'NAME' => 'NAME',
+            'ADDRESS' => 'ADDRESS',
+            'AGE' => 'AGE',
+        ];
+    }
 }
