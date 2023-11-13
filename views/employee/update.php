@@ -10,6 +10,6 @@ use yii\widgets\ActiveForm;
 <?= $form->field($model, 'ADDRESS') ?>
 <?= $form->field($model, 'AGE') ?>
 <?= Html::a('Kembali', ['index'], ['class' => 'btn btn-secondary', 'style' => 'margin-right: 5px;']) ?>
-<?= Html::submitButton('Simpan', ['class' => 'btn btn-primary']) ?>
+<?= Html::submitButton('Ubah', ['class' => 'btn btn-primary']) ?>
 
 <?php $form = ActiveForm::end(); ?>

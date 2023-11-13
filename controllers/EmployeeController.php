@@ -5,15 +5,31 @@ namespace app\controllers;
 use Yii;
 use yii\web\Controller;
 use app\models\Employee;
+use yii\data\Pagination;
 
 class EmployeeController extends Controller
 {
     public function actionIndex()
     {
-        $employees = Employee::find()->all();
+        $query = Employee::find();
+        $count = $query->count();
+
+        $pagination = new Pagination([
+            'totalCount' => $count,
+            'defaultPageSize' => 5,
+        ]);
+
+        $employees = $query->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        if (!empty($name)) {
+            $employees = $query->where(['name' => $name]);
+        }
 
         return $this->render('index', [
             'employees' => $employees,
+            'pagination' => $pagination,
         ]);
     }
 
@@ -36,11 +52,30 @@ class EmployeeController extends Controller
         ]);
     }
 
-    public function actionUpdate()
+    public function actionUpdate($ID)
     {
-        // $db = Yii::$app->db;
-        // $row_affected = $db->createCommand('UPDATE EMPLOYEE SET ADDRESS="Tangerang" WHERE ID=4')->execute();
+        $model = Employee::findOne($ID);
 
-        // echo $row_affected . " row affected";
+        if (Yii::$app->request->post()) {
+            $model->load(Yii::$app->request->post());
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', 'Data berhasil disimpan');
+            } else {
+                Yii::$app->session->setFlash('error', 'Gagal disimpan');
+            }
+            return $this->refresh();
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionDelete($ID)
+    {
+        $model = Employee::findOne($ID);
+        $model->delete();
+
+        return $this->redirect('index');
     }
 }
